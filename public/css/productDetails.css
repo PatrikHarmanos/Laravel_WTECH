@@ -1,0 +1,28 @@
+.productDetails {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 20px;
+    padding-bottom: 100px;
+    padding-right: 120px;
+    padding-left: 120px;
+}
+
+@media screen and (min-width: 992px) {
+    .productDetails {
+        padding-top: 100px;
+    }
+}
+
+.productDetailsBtn {
+    width: 160px !important;
+}
+
+.productDetailImg {
+    height: 400px;
+    width: 400px;
+    object-fit: scale-down;
+    margin-left: auto;
+    margin-right: auto;
+}
