@@ -4,42 +4,45 @@
     <!-- selected category jumbotron -->
     <article class="jumbotron jumbotron-fluid bg-success">
         <div class="container pt-4 pb-4">
-            <h1 class="display-4 text-center text-white"> Moderné umenie</h1>
+            <h1 class="display-4 text-center text-white">{{ $category }}</h1>
         </div>
     </article>
     <!-- pick categories buttons -->
     <section class="btn-toolbar d-flex justify-content-center mt-4 mb-2" role="toolbar" aria-label="Toolbar with button groups">
         <div class="btn-group me-3" role="group" aria-label="First group">
-            <button type="button" class="btn btn-outline-dark customBtnWidth mb-3">Moderné umenie</button>
+            <form method="GET" action="{{ route('products.index') }}">
+                <button type="submit" name="category" value="Moderné umenie" class="btn btn-outline-dark customBtnWidth mb-3">Moderné umenie</button>
+            </form>
         </div>
         <div class="btn-group me-3" role="group" aria-label="First group">
-            <button type="button" class="btn btn-outline-dark customBtnWidth mb-3">Historické obrazy</button>
+            <form method="GET" action="{{ route('products.index') }}">
+                <button type="submit" name="category" value="Historické obrazy" class="btn btn-outline-dark customBtnWidth mb-3">Historické obrazy</button>
+            </form>
         </div>
         <div class="btn-group me-3" role="group" aria-label="First group">
-            <button type="button" class="btn btn-outline-dark customBtnWidth mb-3">Príroda</button>
+            <form method="GET" action="{{ route('products.index') }}">
+                <button type="submit" name="category" value="Príroda" class="btn btn-outline-dark customBtnWidth mb-3">Príroda</button>
+            </form>
         </div>
         <div class="btn-group me-3" role="group" aria-label="First group">
-            <button type="button" class="btn btn-outline-dark customBtnWidth mb-3">Zátišia</button>
+            <form method="GET" action="{{ route('products.index') }}">
+                <button type="submit" name="category" value="Zátišia" class="btn btn-outline-dark customBtnWidth mb-3">Zátišia</button>
+            </form>
         </div>
         <div class="btn-group me-3" role="group" aria-label="First group">
-            <button type="button" class="btn btn-outline-dark customBtnWidth mb-3">Architektúra</button>
+            <form method="GET" action="{{ route('products.index') }}">
+                <button type="submit" name="category" value="Architektúra" class="btn btn-outline-dark customBtnWidth mb-3">Architektúra</button>
+            </form>
         </div>
         <div class="btn-group me-3" role="group" aria-label="First group">
-            <button type="button" class="btn btn-outline-dark customBtnWidth mb-3">Fotografie</button>
+            <form method="GET" action="{{ route('products.index') }}">
+                <button type="submit" name="category" value="Fotografie" class="btn btn-outline-dark customBtnWidth mb-3">Fotografie</button>
+            </form>
         </div>
     </section>
 
     <!-- filter products dropdowns -->
     <section class="btn-toolbar d-flex justify-content-center mb-2" role="toolbar" aria-label="Toolbar with button groups">
-        <div class="btn-group me-3" role="group" aria-label="First group">
-            <button id="btnGroupDrop1" type="button" class="btn btn-outline-danger dropdown-toggle mb-3 customBtnWidthSmaller" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Farba
-            </button>
-            <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                <a class="dropdown-item" href="#">Čierno-biele</a>
-                <a class="dropdown-item" href="#">Farebné</a>
-            </div>
-        </div>
         <div class="btn-group me-3" role="group" aria-label="First group">
             <button id="btnGroupDrop1" type="button" class="btn btn-outline-danger dropdown-toggle mb-3 customBtnWidthSmaller" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Cena
@@ -52,19 +55,9 @@
         </div>
         <div class="btn-group me-3" role="group" aria-label="First group">
             <button id="btnGroupDrop1" type="button" class="btn btn-outline-danger dropdown-toggle mb-3 customBtnWidthSmaller" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Veľkosť
-            </button>
-            <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                <a class="dropdown-item" href="#">100x200</a>
-                <a class="dropdown-item" href="#">200x600</a>
-            </div>
-        </div>
-        <div class="btn-group me-3" role="group" aria-label="First group">
-            <button id="btnGroupDrop1" type="button" class="btn btn-outline-danger dropdown-toggle mb-3 customBtnWidthSmaller" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Zoradiť podľa
             </button>
             <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                <a class="dropdown-item" href="#">Najpredávanejšie</a>
                 <a class="dropdown-item" href="#">Najdrahšie</a>
                 <a class="dropdown-item" href="#">Najlacnejšie</a>
                 <a class="dropdown-item" href="#">Najnovšie</a>

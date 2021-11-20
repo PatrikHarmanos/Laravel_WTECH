@@ -15,6 +15,26 @@ use App\Http\Controllers\ProductsController;
 */
 Route::resource('products', ProductsController::class);
 
+Route::get('/add-to-cart/{id}', [
+   'uses' => 'App\Http\Controllers\ProductsController@getAddToCart',
+    'as' => 'product.addToCart'
+]);
+
+Route::get('/remove-from-cart/{id}', [
+    'uses' => 'App\Http\Controllers\ProductsController@getRemoveFromCart',
+    'as' => 'product.removeFromCart'
+]);
+
+Route::get('/shopping-cart/', [
+    'uses' => 'App\Http\Controllers\ProductsController@getCart',
+    'as' => 'product.shoppingCart'
+]);
+
+Route::get('/checkout', [
+    'uses' => 'App\Http\Controllers\ProductsController@getCheckout',
+    'as' => 'checkout'
+]);
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');

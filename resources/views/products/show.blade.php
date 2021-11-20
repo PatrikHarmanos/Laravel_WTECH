@@ -31,7 +31,7 @@
         <h5>Popis produktu</h5>
         <p>{{ $product->description }}</p>
         <div class="d-grid gap-2 col-8 mx-auto mt-3">
-            <button class="btn btn-success btn-lg" type="button">Pridat do kosika</button>
+            <a href="{{ route('product.addToCart', ['id' => $product->id]) }}" class="btn btn-success btn-lg" type="button">Pridat do kosika</a>
         </div>
     </div>
 </div>

@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\Cart;
+use Illuminate\Support\Facades\Session;
 
 
 class ProductsController extends Controller
@@ -17,15 +19,23 @@ class ProductsController extends Controller
      */
     public function index(Request $request)
     {
+        //Session::flush();
         $search = $request->query('search');
+        $selected_category = $request->query('category');
 
         if ($search) {
             $products = Product::where('title', 'ILIKE', '%'.$search.'%')->paginate(4);
+            return view('products.index')->with('products', $products)->with('category', 'Vsetky kategorie');
+        } else if ($selected_category) {
+            $category_id = ProductCategory::where('category_name', $selected_category)->first()->id;
+            $products = Product::where('category_id', 'LIKE', $category_id)->paginate(4);
+            return view('products.index')->with('products', $products)->with('category', $selected_category);
         } else {
             $products = Product::paginate(4);
+            return view('products.index')->with('products', $products)->with('category', 'Vsetky kategorie');
         }
 
-        return view('products.index', compact('products', $products));
+
     }
 
     /**
@@ -131,5 +141,51 @@ class ProductsController extends Controller
         $search_text = $request->search_query;
         $products = Product::where('title', 'LIKE', '%'.$search_text.'%')->get();
         return view('products.index', compact('products', $products));
+    }
+
+    public function getAddToCart(Request $request, $id) {
+        $product = Product::find($id);
+
+        $oldCart = $request->session()->has('cart') ? $request->session()->get('cart') : null;
+
+        $cart = new Cart($oldCart);
+        $cart->add($product, $product->id);
+
+        $request->session()->put('cart', $cart);
+
+        return redirect()->route('products.index');
+    }
+
+    public function getRemoveFromCart(Request $request, $id) {
+        $product = Product::find($id);
+
+        $oldCart = $request->session()->has('cart') ? $request->session()->get('cart') : null;
+
+        $cart = new Cart($oldCart);
+        $cart->remove($product, $product->id);
+
+        $request->session()->put('cart', $cart);
+
+        return redirect()->route('product.shoppingCart');
+    }
+
+    public function getCart() {
+        if (!Session::has('cart')) {
+            return view('products.shopping-cart');
+        }
+        $oldCart = Session::get('cart');
+        $cart = new Cart($oldCart);
+        return view('products.shopping-cart', ['products' => $cart->items, 'totalPrice' => $cart->totalPrice, 'totalQty' => $cart->totalQty]);
+    }
+
+    public function getCheckout() {
+        if (!Session::has('cart')) {
+            return view('products.shopping-cart');
+        }
+
+        $oldCart = Session::get('cart');
+        $cart = new Cart($oldCart);
+        $total = $cart->totalPrice;
+        return view('products.checkout', ['totalPrice' => $total]);
     }
 }
