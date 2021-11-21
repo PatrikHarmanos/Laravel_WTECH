@@ -48,9 +48,24 @@
                 Cena
             </button>
             <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                <a class="dropdown-item" href="#">do 20€</a>
-                <a class="dropdown-item" href="#">20€ - 50€</a>
-                <a class="dropdown-item" href="#">nad 50€</a>
+                <form class="d-flex dropdown-item" method="GET" action="{{ route('products.index') }}">
+                    <input class="form-control" type="hidden" name="price" value="<20">
+                    <button class="btn" type="submit">
+                        do 20€
+                    </button>
+                </form>
+                <form class="d-flex dropdown-item" method="GET" action="{{ route('products.index') }}">
+                    <input class="form-control" type="hidden" name="price" value="<50">
+                    <button class="btn" type="submit">
+                        20€ - 50€
+                    </button>
+                </form>
+                <form class="d-flex dropdown-item" method="GET" action="{{ route('products.index') }}">
+                    <input class="form-control" type="hidden" name="price" value=">50">
+                    <button class="btn" type="submit">
+                        nad 50€
+                    </button>
+                </form>
             </div>
         </div>
         <div class="btn-group me-3" role="group" aria-label="First group">
@@ -58,14 +73,43 @@
                 Zoradiť podľa
             </button>
             <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                <a class="dropdown-item" href="#">Najdrahšie</a>
-                <a class="dropdown-item" href="#">Najlacnejšie</a>
-                <a class="dropdown-item" href="#">Najnovšie</a>
+                <form class="d-flex dropdown-item" method="GET" action="{{ route('products.index') }}">
+                    <input class="form-control" type="hidden" name="orderBy" value="price">
+                    <input class="form-control" type="hidden" name="orderType" value="desc">
+                    <button class="btn" type="submit">
+                        Najdrahšie
+                    </button>
+                </form>
+                <form class="d-flex dropdown-item" method="GET" action="{{ route('products.index') }}">
+                    <input class="form-control" type="hidden" name="orderBy" value="price">
+                    <input class="form-control" type="hidden" name="orderType" value="asc">
+                    <button class="btn" type="submit">
+                        Najlacnejšie
+                    </button>
+                </form>
+                <form class="d-flex dropdown-item" method="GET" action="{{ route('products.index') }}">
+                    <input class="form-control" type="hidden" name="orderBy" value="created_at">
+                    <input class="form-control" type="hidden" name="orderType" value="desc">
+                    <button class="btn" type="submit">
+                        Najnovšie
+                    </button>
+                </form>
+                <form class="d-flex dropdown-item" method="GET" action="{{ route('products.index') }}">
+                    <input class="form-control" type="hidden" name="orderBy" value="created_at">
+                    <input class="form-control" type="hidden" name="orderType" value="asc">
+                    <button class="btn" type="submit">
+                        Najstaršie
+                    </button>
+                </form>
             </div>
         </div>
-        <div class="btn-group me-3" role="group" aria-label="First group">
-            <a type="button" class="btn btn-outline-dark customBtnWidth mb-3" href="products/create">Pridat produkt</a>
-        </div>
+        @if (\Illuminate\Support\Facades\Auth::check())
+            @if ($user->email == 'admin@gmail.com')
+                <div class="btn-group me-3" role="group" aria-label="First group">
+                    <a type="button" class="btn btn-outline-dark customBtnWidth mb-3" href="products/create">Pridať nový produkt</a>
+                </div>
+            @endif
+        @endif
     </section>
 
     <!-- products -->
@@ -84,7 +128,8 @@
                         <p class="card-text text-secondary">{{ $item->price }} €</p>
                         <div style="display: flex; flex-direction: row; justify-content: space-between;">
                             <a href="products/{{ $item->id }}/" class="btn btn-success btn-block">Zobraziť produkt</a>
-
+                            @if (\Illuminate\Support\Facades\Auth::check())
+                                @if ($user->email == 'admin@gmail.com')
                             <form action="{{url('products', [$item->id])}}" method="POST">
                                 <input type="hidden" name="_method" value="DELETE">
                                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -100,7 +145,8 @@
                                     <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
                                 </svg>
                             </a>
-
+                                @endif
+                            @endif
                         </div>
                     </div>
                 </div>

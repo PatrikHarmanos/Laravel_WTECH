@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Cart;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 
@@ -21,18 +22,35 @@ class ProductsController extends Controller
     {
         //Session::flush();
         $search = $request->query('search');
+        $orderBy = $request->query('orderBy');
+        $orderType = $request->query('orderType');
+        $price = $request->query('price');
         $selected_category = $request->query('category');
+
+        $user = Auth::user();
 
         if ($search) {
             $products = Product::where('title', 'ILIKE', '%'.$search.'%')->paginate(4);
-            return view('products.index')->with('products', $products)->with('category', 'Vsetky kategorie');
+            return view('products.index')->with('products', $products)->with('category', 'Všetky produkty')->with('user', $user);
         } else if ($selected_category) {
             $category_id = ProductCategory::where('category_name', $selected_category)->first()->id;
             $products = Product::where('category_id', 'LIKE', $category_id)->paginate(4);
-            return view('products.index')->with('products', $products)->with('category', $selected_category);
+            return view('products.index')->with('products', $products)->with('category', $selected_category)->with('user', $user);
+        } else if ($orderBy){
+            $products = Product::orderBy($orderBy, $orderType)->paginate(4);
+            return view('products.index')->with('products', $products)->with('category', 'Všetky produkty')->with('user', $user);
+        } else if ($price) {
+            if ($price == '<20')
+                $products = Product::where('price', '<', 20)->paginate(4);
+            else if ($price == '<50')
+                $products = Product::whereBetween('price', array(20, 50))->paginate(4);
+            else if ($price == '>50')
+                $products = Product::where('price', '>', 50)->paginate(4);
+
+            return view('products.index')->with('products', $products)->with('category', 'Všetky produkty')->with('user', $user);
         } else {
             $products = Product::paginate(4);
-            return view('products.index')->with('products', $products)->with('category', 'Vsetky kategorie');
+            return view('products.index')->with('products', $products)->with('category', 'Všetky produkty')->with('user', $user);
         }
 
 
@@ -137,12 +155,6 @@ class ProductsController extends Controller
         return redirect('products');
     }
 
-    public function search(Request $request) {
-        $search_text = $request->search_query;
-        $products = Product::where('title', 'LIKE', '%'.$search_text.'%')->get();
-        return view('products.index', compact('products', $products));
-    }
-
     public function getAddToCart(Request $request, $id) {
         $product = Product::find($id);
 
@@ -154,6 +166,32 @@ class ProductsController extends Controller
         $request->session()->put('cart', $cart);
 
         return redirect()->route('products.index');
+    }
+
+    public function getPlusOneToCart(Request $request, $id) {
+        $product = Product::find($id);
+
+        $oldCart = $request->session()->has('cart') ? $request->session()->get('cart') : null;
+
+        $cart = new Cart($oldCart);
+        $cart->plusOne($product, $product->id);
+
+        $request->session()->put('cart', $cart);
+
+        return redirect()->route('product.shoppingCart');
+    }
+
+    public function getMinusOneToCart(Request $request, $id) {
+        $product = Product::find($id);
+
+        $oldCart = $request->session()->has('cart') ? $request->session()->get('cart') : null;
+
+        $cart = new Cart($oldCart);
+        $cart->minusOne($product, $product->id);
+
+        $request->session()->put('cart', $cart);
+
+        return redirect()->route('product.shoppingCart');
     }
 
     public function getRemoveFromCart(Request $request, $id) {
@@ -187,5 +225,10 @@ class ProductsController extends Controller
         $cart = new Cart($oldCart);
         $total = $cart->totalPrice;
         return view('products.checkout', ['totalPrice' => $total]);
+    }
+
+    public function getProfile() {
+        $user = Auth::user();
+        return view('products.profile')->with('user', $user);
     }
 }

@@ -31,7 +31,11 @@
         <h5>Popis produktu</h5>
         <p>{{ $product->description }}</p>
         <div class="d-grid gap-2 col-8 mx-auto mt-3">
-            <a href="{{ route('product.addToCart', ['id' => $product->id]) }}" class="btn btn-success btn-lg" type="button">Pridat do kosika</a>
+            @if (\Illuminate\Support\Facades\Auth::check())
+                <a href="{{ route('auth.product.addToCart', ['id' => $product->id]) }}" class="btn btn-success btn-lg" type="button">Pridat do kosika</a>
+            @else
+                <a href="{{ route('product.addToCart', ['id' => $product->id]) }}" class="btn btn-success btn-lg" type="button">Pridat do kosika</a>
+            @endif
         </div>
     </div>
 </div>
