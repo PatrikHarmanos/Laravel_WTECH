@@ -7,7 +7,7 @@
         <div class="collapse navbar-collapse ms-xl-5" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-5">
                 <li class="nav-item me-lg-4">
-                    <a class="nav-link active" aria-current="page" href="#">Domov</a>
+                    <a class="nav-link active" aria-current="page" href="{{ route('welcome') }}">Domov</a>
                 </li>
                 <li class="nav-item dropdown me-lg-4">
                     <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">

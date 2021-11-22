@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class CartController extends Controller
 {
@@ -95,20 +96,53 @@ class CartController extends Controller
         $q = array();
 
         if ($order) {
-            $ids = Order_item::where('order_id', '=', $order->id)->get();
+            if (!$order->finished) {
+                $ids = Order_item::where('order_id', '=', $order->id)->get();
 
-            foreach ($ids as $id){
-                $q[$id->product_id] = $id->quantity;
-                $d = Product::where('id', $id->product_id)->get();
-                foreach ($d as $i){
-                    array_push($products, $i);
+                foreach ($ids as $id){
+                    $q[$id->product_id] = $id->quantity;
+                    $d = Product::where('id', $id->product_id)->get();
+                    foreach ($d as $i){
+                        array_push($products, $i);
+                    }
                 }
+                return view('products.shopping-cart', ['products' => $products, 'totalPrice' => $order->totalPrice, 'totalQty' => $order->totalQty, 'quantity' => $q]);
             }
-            return view('products.shopping-cart', ['products' => $products, 'totalPrice' => $order->totalPrice, 'totalQty' => $order->totalQty, 'quantity' => $q]);
         } else {
             return view('products.shopping-cart', ['products' => $products, 'totalPrice' => 0, 'totalQty' => 0, 'quantity' => $q]);
         }
+    }
 
+    public function getCheckoutAuth() {
+        $user = Auth::user();
 
+        $order = Order::where('user_id', '=', $user->id)->first();
+
+        return view('products.checkout', ['totalPrice' => $order->totalPrice]);
+    }
+
+    public function finishOrderAuth(Request $request) {
+
+        $user = Auth::user();
+
+        $order = Order::where('user_id', '=', $user->id)->first();
+
+        $order->email = $request->input('email');
+        $order->name = $request->input('name');
+        $order->address = $request->input('address');
+        $order->city = $request->input('city');
+        $order->psc = $request->input('psc');
+        $order->phone_number = $request->input('number');
+        $order->delivery = $request->input('delivery');
+        $order->payment = $request->input('payment');
+        $order->card_number = $request->input('card_number');
+        $order->card_expiration = $request->input('card_month') . '/' . $request->input('card_year');
+        $order->card_csv = $request->input('card_csv');
+        $order->finished = true;
+
+        $order->save();
+
+        $products = Product::paginate(8);
+        return view('products.index')->with('products', $products)->with('category', 'Všetky produkty')->with('user', $user);
     }
 }

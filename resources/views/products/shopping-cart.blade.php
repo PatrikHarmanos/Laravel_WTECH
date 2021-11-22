@@ -78,7 +78,7 @@
                 </div>
                 <div class="row mt-4 d-flex align-items-center">
                     <div class="col-sm-6 order-md-2 text-right">
-                        <a href="{{ route('checkout') }}" class="btn btn-success mb-4 btn-lg pl-5 pr-5">Prejsť na platbu a doručenie</a>
+                        <a href="{{ route('auth.checkout') }}" class="btn btn-success mb-4 btn-lg pl-5 pr-5">Prejsť na platbu a doručenie</a>
                     </div>
                     <div class="col-sm-6 mb-3 mb-m-1 order-md-1 text-md-left">
                         <a href="{{ route('products.index') }}">
@@ -87,7 +87,7 @@
                 </div>
             </div>
         </section>
-        @elseif(\Illuminate\Support\Facades\Session::has('cart'))
+    @elseif(\Illuminate\Support\Facades\Session::has('cart'))
         <section class="pb-5">
             <!-- jumbotron with cart name -->
             <div class="jumbotron jumbotron-fluid bg-success">

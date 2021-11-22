@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
+use App\Models\Order_item;
 use Illuminate\Http\Request;
 
 use App\Models\Product;
@@ -13,6 +15,11 @@ use Illuminate\Support\Facades\Session;
 
 class ProductsController extends Controller
 {
+    public function getWelcome() {
+        $productsOne = Product::all()->take(4);
+        $productsTwo = Product::latest()->take(4)->get();
+        return view('products.welcome')->with('productsOne', $productsOne)->with('productsTwo', $productsTwo);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -30,26 +37,26 @@ class ProductsController extends Controller
         $user = Auth::user();
 
         if ($search) {
-            $products = Product::where('title', 'ILIKE', '%'.$search.'%')->paginate(4);
+            $products = Product::where('title', 'ILIKE', '%'.$search.'%')->paginate(8);
             return view('products.index')->with('products', $products)->with('category', 'Všetky produkty')->with('user', $user);
         } else if ($selected_category) {
             $category_id = ProductCategory::where('category_name', $selected_category)->first()->id;
-            $products = Product::where('category_id', 'LIKE', $category_id)->paginate(4);
+            $products = Product::where('category_id', 'LIKE', $category_id)->paginate(8);
             return view('products.index')->with('products', $products)->with('category', $selected_category)->with('user', $user);
         } else if ($orderBy){
-            $products = Product::orderBy($orderBy, $orderType)->paginate(4);
+            $products = Product::orderBy($orderBy, $orderType)->paginate(8);
             return view('products.index')->with('products', $products)->with('category', 'Všetky produkty')->with('user', $user);
         } else if ($price) {
             if ($price == '<20')
-                $products = Product::where('price', '<', 20)->paginate(4);
+                $products = Product::where('price', '<', 20)->paginate(8);
             else if ($price == '<50')
-                $products = Product::whereBetween('price', array(20, 50))->paginate(4);
+                $products = Product::whereBetween('price', array(20, 50))->paginate(8);
             else if ($price == '>50')
-                $products = Product::where('price', '>', 50)->paginate(4);
+                $products = Product::where('price', '>', 50)->paginate(8);
 
             return view('products.index')->with('products', $products)->with('category', 'Všetky produkty')->with('user', $user);
         } else {
-            $products = Product::paginate(4);
+            $products = Product::paginate(8);
             return view('products.index')->with('products', $products)->with('category', 'Všetky produkty')->with('user', $user);
         }
 
@@ -78,7 +85,7 @@ class ProductsController extends Controller
         $request->validate([
             'title' => 'required',
             'price' => 'required',
-            'image' => 'required|mimes:jpg,png,jpeg|max:5048'
+            'image' => 'required|mimes:jpg,png,jpeg'
         ]);
 
         $newImageName = time() . '-' . $request->title . '.' . $request->image->extension();
@@ -151,7 +158,6 @@ class ProductsController extends Controller
     public function destroy(Request $request, Product $product)
     {
         $product->delete();
-        $request->session()->flash('message', 'Produkt bol úspešne vymazany.');
         return redirect('products');
     }
 
@@ -229,6 +235,40 @@ class ProductsController extends Controller
 
     public function getProfile() {
         $user = Auth::user();
-        return view('products.profile')->with('user', $user);
+        $orders = Order::where('user_id', '=', $user->id)->get();
+        return view('products.profile')->with('user', $user)->with('orders', $orders);
+    }
+
+    public function finishOrder(Request $request) {
+        $oldCart = Session::get('cart');
+        $cart = new Cart($oldCart);
+
+        $order = Order::create([
+            'email' => $request->input('email'),
+            'name' => $request->input('name'),
+            'address' => $request->input('address'),
+            'city' => $request->input('city'),
+            'psc' => $request->input('psc'),
+            'phone_number' => $request->input('number'),
+            'delivery' => $request->input('delivery'),
+            'payment' => $request->input('payment'),
+            'card_number' => $request->input('card_number'),
+            'card_expiration' => $request->input('card_month') . '/' . $request->input('card_year'),
+            'card_csv' => $request->input('card_csv'),
+            'finished' => true
+        ]);
+
+        foreach ($cart->items as $product) {
+            $order_item = Order_item::create([
+                'order_id' => $order->id,
+                'product_id' => $product['item']['id'],
+                'quantity' => $product['qty']
+            ]);
+        }
+
+        $request->session()->forget('cart');
+
+        $products = Product::paginate(8);
+        return view('products.index')->with('products', $products)->with('category', 'Všetky produkty');
     }
 }

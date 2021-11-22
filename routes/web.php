@@ -17,6 +17,11 @@ use App\Http\Controllers\ProductsController;
 */
 Route::resource('products', ProductsController::class);
 
+Route::get('/welcome/', [
+    'uses' => 'App\Http\Controllers\ProductsController@getWelcome',
+    'as' => 'welcome'
+]);
+
 Route::get('/add-to-cart/{id}', [
    'uses' => 'App\Http\Controllers\ProductsController@getAddToCart',
     'as' => 'product.addToCart'
@@ -75,6 +80,21 @@ Route::get('/profile/', [
 Route::get('/checkout', [
     'uses' => 'App\Http\Controllers\ProductsController@getCheckout',
     'as' => 'checkout'
+]);
+
+Route::get('/checkout-auth', [
+    'uses' => 'App\Http\Controllers\CartController@getCheckoutAuth',
+    'as' => 'auth.checkout'
+]);
+
+Route::get('/finish-order-auth', [
+    'uses' => 'App\Http\Controllers\CartController@finishOrderAuth',
+    'as' => 'auth.finishOrder'
+]);
+
+Route::get('/finish-order', [
+    'uses' => 'App\Http\Controllers\ProductsController@finishOrder',
+    'as' => 'finishOrder'
 ]);
 
 Route::get('/dashboard', function () {
