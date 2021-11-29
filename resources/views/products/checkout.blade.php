@@ -9,6 +9,15 @@
             <!-- COLUMN 1 -->
             <div class="col-xl-6 col-12" style="background-color: white">
                 <h2 class="display-6 signInHeading mt-5">Osobné a doručovacie údaje</h2>
+                @if ($errors->any())
+                    <div class="alert alert-danger mt-5">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="form-block">
                     <div class="form-group">
                         <label for="exampleInputEmail1" class="mb-2">E-mail</label>
@@ -121,6 +130,15 @@
         <!-- COLUMN 1 -->
             <div class="col-xl-6 col-12" style="background-color: white">
                 <h2 class="display-6 signInHeading mt-5">Osobné a doručovacie údaje</h2>
+                @if ($errors->any())
+                    <div class="alert alert-danger mt-5">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="form-block">
                     <div class="form-group">
                         <label for="exampleInputEmail1" class="mb-2">E-mail</label>

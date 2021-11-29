@@ -11,6 +11,7 @@ use App\Models\ProductCategory;
 use App\Models\Cart;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 
 
 class ProductsController extends Controller
@@ -83,9 +84,10 @@ class ProductsController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required',
+            'title' => 'required|between:1,30',
             'price' => 'required',
-            'image' => 'required|mimes:jpg,png,jpeg'
+            'image' => 'required|mimes:jpg,png,jpeg',
+            'description' => 'required||between:1,500'
         ]);
 
         $newImageName = time() . '-' . $request->title . '.' . $request->image->extension();
@@ -137,8 +139,24 @@ class ProductsController extends Controller
      */
     public function update(Request $request, Product $product)
     {
+        $request->validate([
+            'title' => 'required|between:1,30',
+            'price' => 'required',
+            'description' => 'required||between:1,500'
+        ]);
+
         $product->title = $request->title;
         $product->price = $request->price;
+
+        // ak pouzivatel nahral novu fotku
+        if ($request->image != null) {
+            // delete old picture
+            unlink(public_path() . '/images/' . $product->image_path);
+            // save new picture
+            $newImageName = time() . '-' . $request->title . '.' . $request->image->extension();
+            $request->image->move(public_path('images'), $newImageName);
+            $product->image_path = $newImageName;
+        }
 
         $product->description = $request->get('description');
         $product->category_id = $request->get('category_id');
@@ -157,6 +175,7 @@ class ProductsController extends Controller
      */
     public function destroy(Request $request, Product $product)
     {
+        unlink(public_path() . '/images/' . $product->image_path);
         $product->delete();
         return redirect('products');
     }
@@ -235,11 +254,34 @@ class ProductsController extends Controller
 
     public function getProfile() {
         $user = Auth::user();
-        $orders = Order::where('user_id', '=', $user->id)->get();
+        if ($user->email == 'admin@gmail.com'){
+            $orders = Order::paginate(2);
+        } else {
+            $orders = Order::where('user_id', '=', $user->id)->paginate(2);
+        }
         return view('products.profile')->with('user', $user)->with('orders', $orders);
     }
 
     public function finishOrder(Request $request) {
+        $request->validate([
+            'email' => 'required|email:rfc,dns',
+            'name' => 'required',
+            'address' => 'required',
+            'city' => 'required',
+            'psc' => 'required',
+            'number' => 'required|digits:10',
+            'address' => 'required'
+        ]);
+
+        if ($request->input('payment') == 'card') {
+            $request->validate([
+                'card_number' => 'required|digits_between:5,12',
+                'card_month' => 'required|digits:2',
+                'card_year' => 'required|digits:2',
+                'card_csv' => 'required|digits:3'
+            ]);
+        }
+
         $oldCart = Session::get('cart');
         $cart = new Cart($oldCart);
 
@@ -255,7 +297,9 @@ class ProductsController extends Controller
             'card_number' => $request->input('card_number'),
             'card_expiration' => $request->input('card_month') . '/' . $request->input('card_year'),
             'card_csv' => $request->input('card_csv'),
-            'finished' => true
+            'finished' => true,
+            'totalPrice' => $cart->totalPrice,
+            'totalQty' => $cart->totalQty
         ]);
 
         foreach ($cart->items as $product) {

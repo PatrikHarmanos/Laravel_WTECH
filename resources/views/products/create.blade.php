@@ -7,6 +7,15 @@
             <!-- COLUMN 1 -->
             <div class="col-12 col-md-10 col-xl-6" style="background-color: white">
                 <h2 class="display-5 signInHeading mt-5">Pridanie nového produktu</h2>
+                @if ($errors->any())
+                    <div class="alert alert-danger mt-5">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <form class="form-block" action="/products" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">

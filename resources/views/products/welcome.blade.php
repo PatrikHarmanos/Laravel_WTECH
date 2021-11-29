@@ -15,7 +15,9 @@
                     <div class="carousel-caption text-start">
                         <h1>História na dosah.</h1>
                         <p>Preskúmajte diela, ktoré majú v sebe históriu a príbehy.</p>
-                        <p><a class="btn btn-lg btn-success" href="#">Zistiť viac</a></p>
+                        <form method="GET" action="{{ route('products.index') }}">
+                            <button type="submit" name="category" value="Historické obrazy" class="btn btn-lg btn-success">Zistiť viac</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -25,7 +27,9 @@
                     <div class="carousel-caption">
                         <h1>Nahliadnite do budúcnosti.</h1>
                         <p>Najnovšie kolekcie moderného umenia od svetových umelcov.</p>
-                        <p><a class="btn btn-lg btn-success" href="#">Zistiť viac</a></p>
+                        <form method="GET" action="{{ route('products.index') }}">
+                            <button type="submit" name="category" value="Moderné umenie" class="btn btn-lg btn-success">Zistiť viac</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -35,7 +39,9 @@
                     <div class="carousel-caption text-end">
                         <h1>Fotografie ako umenie.</h1>
                         <p>Poďte s nami nahliadnuť do sveta ďaleko za objektívom.</p>
-                        <p><a class="btn btn-lg btn-success" href="#">Zistiť viac</a></p>
+                        <form method="GET" action="{{ route('products.index') }}">
+                            <button type="submit" name="category" value="Fotografie" class="btn btn-lg btn-success">Zistiť viac</button>
+                        </form>
                     </div>
                 </div>
             </div>

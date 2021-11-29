@@ -16,16 +16,18 @@
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" href="/products">Všetky kategórie</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">Moderné umenie</a></li>
-                        <li><a class="dropdown-item" href="#">Historické obrazy</a></li>
-                        <li><a class="dropdown-item" href="#">Príroda</a></li>
-                        <li><a class="dropdown-item" href="#">Zátišia</a></li>
-                        <li><a class="dropdown-item" href="#">Architektúra</a></li>
-                        <li><a class="dropdown-item" href="#">Fotografie</a></li>
+                        <form method="GET" action="{{ route('products.index') }}">
+                            <button type="submit" name="category" value="Moderné umenie" class="dropdown-item">Moderné umenie</button>
+                            <button type="submit" name="category" value="Historické obrazy" class="dropdown-item">Historické obrazy</button>
+                            <button type="submit" name="category" value="Príroda" class="dropdown-item">Príroda</button>
+                            <button type="submit" name="category" value="Zátišia" class="dropdown-item">Zátišia</button>
+                            <button type="submit" name="category" value="Architektúra" class="dropdown-item">Architektúra</button>
+                            <button type="submit" name="category" value="Fotografie" class="dropdown-item">Fotografie</button>
+                        </form>
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="categories.html">Výpredaj</a>
+                    <a class="nav-link active" aria-current="page" href="/products">Výpredaj</a>
                 </li>
             </ul>
             <form class="d-flex me-xl-5" method="GET" action="{{ route('products.index') }}">
@@ -75,7 +77,7 @@
                     @endif
                 </li>
                 @if (\Illuminate\Support\Facades\Auth::check())
-                    <li class="nav-item ms-5">
+                    <li class="nav-item ms-xl-5">
                         <!-- logout button -->
                         <a class="nav-link active" aria-current="page" href="{{ route('logout.perform') }}">
                             Odhlásiť sa

@@ -12,9 +12,9 @@
         @yield('content')
 </main>
 <!-- Bootstrap core JavaScript -->
-@include('layouts.partials.footer-scripts');
+@include('layouts.partials.footer-scripts')
 
-@include('layouts.partials.footer');
+@include('layouts.partials.footer')
 </body>
 </html>
 

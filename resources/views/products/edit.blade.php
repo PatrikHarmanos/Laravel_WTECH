@@ -7,6 +7,15 @@
             <!-- COLUMN 1 -->
             <div class="col-12 col-md-10 col-xl-6" style="background-color: white">
                 <h2 class="display-5 signInHeading mt-5">Editovanie produktu</h2>
+                @if ($errors->any())
+                    <div class="alert alert-danger mt-5">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <form class="form-block" action="{{url('products', [$product->id])}}" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="_method" value="PUT">
                     {{ csrf_field() }}
@@ -25,6 +34,10 @@
                     <div class="form-group">
                         <label for="exampleInputPassword1" class="mb-2 mt-2">Cena produktu (€)</label>
                         <input type="text" class="form-control" id="exampleInputPassword1" value="{{ $product->price }}" name="price">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label mt-2 mb-2" for="customFile">Fotografia</label>
+                        <input type="file" class="form-control" id="customFile" name="image"/>
                     </div>
                     <div class="form-group">
                         <label for="exampleFormControlTextarea1" class="mt-2 mb-2">Popis produktu</label>

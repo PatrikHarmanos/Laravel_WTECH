@@ -20,7 +20,7 @@ class LogoutController extends Controller
 
         Auth::logout();
 
-        $products = Product::paginate(4);
+        $products = Product::paginate(8);
         return view('products.index')->with('products', $products)->with('category', 'Všetky produkty');
     }
 }

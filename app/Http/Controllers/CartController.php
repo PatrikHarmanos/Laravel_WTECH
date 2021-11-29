@@ -18,25 +18,30 @@ class CartController extends Controller
         $product = Product::find($id);
 
         $user = Auth::user();
+        $order = Order::where([
+            ['user_id', '=', $user->id],
+            ['finished', '=', null]
+        ])->first();
 
-        if (Order::where('user_id', '=', $user->id)->exists()) {
+
+        if ($order) {
             $order = Order::where('user_id', '=', $user->id)->first();
+            $order->totalPrice += $product->price;
+            $order->totalQty += 1;
+            $order->save();
         } else {
             $order = Order::create([
-                'user_id' => $user->id
+                'user_id' => $user->id,
+                'totalPrice' => $product->price,
+                'totalQty' => 1
             ]);
         }
-
 
         $order_item = Order_item::create([
             'order_id' => $order->id,
             'product_id' => $product->id,
             'quantity' => 1
         ]);
-
-        $order->totalPrice += $product->price;
-        $order->totalQty += 1;
-        $order->save();
 
         return redirect()->route('products.index');
     }
@@ -45,7 +50,10 @@ class CartController extends Controller
         $product = Product::find($id);
 
         $user = Auth::user();
-        $order = Order::where('user_id', '=', $user->id)->first();
+        $order = Order::where([
+            ['user_id', '=', $user->id],
+            ['finished', '=', null]
+        ])->first();
         $order_item = Order_item::where('order_id', '=', $order->id)->where('product_id', '=', $product->id)->first();
         $order_item->quantity += 1;
         $order_item->save();
@@ -60,7 +68,10 @@ class CartController extends Controller
         $product = Product::find($id);
 
         $user = Auth::user();
-        $order = Order::where('user_id', '=', $user->id)->first();
+        $order = Order::where([
+            ['user_id', '=', $user->id],
+            ['finished', '=', null]
+        ])->first();
         $order_item = Order_item::where('order_id', '=', $order->id)->where('product_id', '=', $product->id)->first();
         $order_item->quantity -= 1;
         $order_item->save();
@@ -75,7 +86,10 @@ class CartController extends Controller
         $product = Product::find($id);
 
         $user = Auth::user();
-        $order = Order::where('user_id', '=', $user->id)->first();
+        $order = Order::where([
+            ['user_id', '=', $user->id],
+            ['finished', '=', null]
+        ])->first();
         $order_item = Order_item::where('order_id', '=', $order->id)->where('product_id', '=', $product->id)->first();
 
         $order->totalQty -= 1;
@@ -90,24 +104,25 @@ class CartController extends Controller
     public function getCartAuth() {
         $user = Auth::user();
 
-        $order = Order::where('user_id', '=', $user->id)->first();
+        $order = Order::where([
+            ['user_id', '=', $user->id],
+            ['finished', '=', null]
+        ])->first();
 
         $products = array();
         $q = array();
 
         if ($order) {
-            if (!$order->finished) {
-                $ids = Order_item::where('order_id', '=', $order->id)->get();
+            $ids = Order_item::where('order_id', '=', $order->id)->get();
 
-                foreach ($ids as $id){
-                    $q[$id->product_id] = $id->quantity;
-                    $d = Product::where('id', $id->product_id)->get();
-                    foreach ($d as $i){
-                        array_push($products, $i);
-                    }
+            foreach ($ids as $id){
+                $q[$id->product_id] = $id->quantity;
+                $d = Product::where('id', $id->product_id)->get();
+                foreach ($d as $i){
+                    array_push($products, $i);
                 }
-                return view('products.shopping-cart', ['products' => $products, 'totalPrice' => $order->totalPrice, 'totalQty' => $order->totalQty, 'quantity' => $q]);
             }
+            return view('products.shopping-cart', ['products' => $products, 'totalPrice' => $order->totalPrice, 'totalQty' => $order->totalQty, 'quantity' => $q]);
         } else {
             return view('products.shopping-cart', ['products' => $products, 'totalPrice' => 0, 'totalQty' => 0, 'quantity' => $q]);
         }
@@ -116,7 +131,10 @@ class CartController extends Controller
     public function getCheckoutAuth() {
         $user = Auth::user();
 
-        $order = Order::where('user_id', '=', $user->id)->first();
+        $order = Order::where([
+            ['user_id', '=', $user->id],
+            ['finished', '=', null]
+        ])->first();
 
         return view('products.checkout', ['totalPrice' => $order->totalPrice]);
     }
@@ -125,7 +143,29 @@ class CartController extends Controller
 
         $user = Auth::user();
 
-        $order = Order::where('user_id', '=', $user->id)->first();
+        $request->validate([
+            'email' => 'required|email:rfc,dns',
+            'name' => 'required',
+            'address' => 'required',
+            'city' => 'required',
+            'psc' => 'required',
+            'number' => 'required|digits:10',
+            'address' => 'required'
+        ]);
+
+        if ($request->input('payment') == 'card') {
+            $request->validate([
+                'card_number' => 'required|digits_between:5,12',
+                'card_month' => 'required|digits:2',
+                'card_year' => 'required|digits:2',
+                'card_csv' => 'required|digits:3'
+            ]);
+        }
+
+        $order = Order::where([
+            ['user_id', '=', $user->id],
+            ['finished', '=', null]
+        ])->first();
 
         $order->email = $request->input('email');
         $order->name = $request->input('name');

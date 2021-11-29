@@ -99,7 +99,7 @@ Route::get('/finish-order', [
 
 Route::get('/dashboard', function () {
     $user = Auth::user();
-    $products = Product::paginate(4);
+    $products = Product::paginate(8);
     return view('products.index')->with('products', $products)->with('category', 'Vsetky kategorie')->with('user', $user);
 })->middleware(['auth'])->name('dashboard');
 

@@ -113,12 +113,12 @@
     </section>
 
     <!-- products -->
-    <section class="container mt-5">
+    <section class="container mt-5 pb-4">
 
         <!-- FIRST ROW -->
         <div class="row">
             @forelse($products as $item)
-            <div class="col-md-3 col-sm-6 mb-sm-5 mb-5">
+            <div class="col-xl-3 col-sm-6 mb-sm-5 mb-5">
                 <div class="card">
                     <div class="img-wrapper">
                         <img class="card-img-top" src="{{ asset('images/' . $item->image_path) }}" alt="obrázok Príroda sa prebúdza">
