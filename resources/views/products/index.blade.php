@@ -104,7 +104,7 @@
             </div>
         </div>
         @if (\Illuminate\Support\Facades\Auth::check())
-            @if ($user->email == 'admin@gmail.com')
+            @if ($user->isAdmin)
                 <div class="btn-group me-3" role="group" aria-label="First group">
                     <a type="button" class="btn btn-outline-dark customBtnWidth mb-3" href="products/create">Pridať nový produkt</a>
                 </div>
@@ -129,7 +129,7 @@
                         <div style="display: flex; flex-direction: row; justify-content: space-between;">
                             <a href="products/{{ $item->id }}/" class="btn btn-success btn-block">Zobraziť produkt</a>
                             @if (\Illuminate\Support\Facades\Auth::check())
-                                @if ($user->email == 'admin@gmail.com')
+                                @if ($user->isAdmin)
                             <form action="{{url('products', [$item->id])}}" method="POST">
                                 <input type="hidden" name="_method" value="DELETE">
                                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
